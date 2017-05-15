@@ -34,46 +34,71 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2"
+        app:layout_constraintVertical_bias="0.026"
         app:srcCompat="@drawable/logo" />
 
     <Button
-        android:id="@+id/button11"
+        android:id="@+id/facebookLogin"
         style="@style/Base.Widget.AppCompat.Button.Colored"
-        android:layout_width="159dp"
+        android:layout_width="131dp"
         android:layout_height="59dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="46dp"
+        android:layout_marginTop="8dp"
         android:backgroundTint="@color/com_smart_login_code"
         android:drawableLeft="@drawable/facebook"
         android:text="Log In"
         android:textColor="#ffffff"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/googleLogin"
+        style="@style/Base.TextAppearance.AppCompat.Widget.Button.Colored"
+        android:layout_width="131dp"
+        android:layout_height="59dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="45dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/cardview_light_background"
+        android:drawableLeft="@drawable/google"
+        android:text="Log In"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <View
+        android:layout_width="300dp"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/vapeVideoView"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="@+id/vapeVideoView"
         android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintVertical_bias="0.983" />
+        app:layout_constraintRight_toRightOf="@+id/vapeVideoView"
+        app:layout_constraintVertical_bias="0.865"
+        android:id="@+id/view" />
 
     <Button
-        android:id="@+id/button12"
-        style="@style/Base.TextAppearance.AppCompat.Widget.Button.Colored"
-        android:layout_width="159dp"
-        android:layout_height="59dp"
-        android:backgroundTint="@color/cardview_light_background"
-        android:drawableLeft="@drawable/google"
-        android:text="Log In"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/loginWitthEmail"
+        android:layout_width="293dp"
+        android:layout_height="45dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:text="log in with email"
+        app:layout_constraintBottom_toBottomOf="@+id/vapeVideoView"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintVertical_bias="0.863" />
+        app:layout_constraintTop_toBottomOf="@+id/view"
+        app:layout_constraintVertical_bias="0.047" />/
 
 </android.support.constraint.ConstraintLayout>
