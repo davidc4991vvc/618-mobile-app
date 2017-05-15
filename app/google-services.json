@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "956565011597-e554f0eavuposkdfj6cpj1f619285vvt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jak_reed.www.a618_mobile_app",
+            "certificate_hash": "78127ee4875392a3bbd0a1d6ea97532a2eb540b3"
+          }
+        },
+        {
           "client_id": "956565011597-khj11ciko41l4afak988uin8a2hfda3q.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "956565011597-khj11ciko41l4afak988uin8a2hfda3q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
