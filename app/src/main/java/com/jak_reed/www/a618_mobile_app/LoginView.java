@@ -1,5 +1,6 @@
 package com.jak_reed.www.a618_mobile_app;
 
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
 import java.net.URI;
+
+import mehdi.sakout.fancybuttons.FancyButton;
 
 public class LoginView extends AppCompatActivity {
 
@@ -32,7 +35,9 @@ public class LoginView extends AppCompatActivity {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mp.setVolume(0, 0);
+                mp.setLooping(true);
             }
         });
+
     }
 }
