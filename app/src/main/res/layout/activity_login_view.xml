@@ -6,9 +6,24 @@
     android:layout_height="match_parent"
     tools:context="com.jak_reed.www.a618_mobile_app.LoginView">
 
+    <VideoView
+        android:id="@+id/vapeVideoView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button"
         android:layout_width="142dp"
+        android:textAlignment="center"
         android:layout_height="51dp"
         android:layout_gravity="center_horizontal"
         app:layout_constraintTop_toTopOf="parent"
@@ -23,19 +38,35 @@
         app:layout_constraintVertical_bias="0.921"
         tools:layout_editor_absoluteY="479dp" />
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
-        android:layout_width="142dp"
-        android:layout_height="51dp"
+    <ImageView
+        android:id="@+id/logoView"
+        android:layout_width="266dp"
+        android:layout_height="246dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.851"
-        tools:layout_editor_absoluteY="431dp" />
+        app:layout_constraintVertical_bias="0.2"
+        app:srcCompat="@drawable/logo" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="146dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical|center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.855"
+        tools:layout_editor_absoluteY="443dp" />
+
 </android.support.constraint.ConstraintLayout>
