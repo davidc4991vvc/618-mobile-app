@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "956565011597",
+    "firebase_url": "https://mobile-83093.firebaseio.com",
+    "project_id": "mobile-83093",
+    "storage_bucket": "mobile-83093.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956565011597:android:659dc6793e7b21a2",
+        "android_client_info": {
+          "package_name": "com.jak_reed.www.a618_mobile_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "956565011597-khj11ciko41l4afak988uin8a2hfda3q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc2Xj4rzmaNUsjWuhDQFlUa-_uI3xnteU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">618-mobile-app</string>
+    <string name="facebook_app_id">1721115554571479</string>
+    <string name="fb_login_protocol_scheme">fb1721115554571479</string>
 </resources>
