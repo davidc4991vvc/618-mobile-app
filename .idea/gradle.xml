@@ -8,6 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/618-mobile-backend" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>
