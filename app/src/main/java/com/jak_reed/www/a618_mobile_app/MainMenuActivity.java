@@ -1,8 +1,10 @@
 package com.jak_reed.www.a618_mobile_app;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,9 +14,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.squareup.picasso.Picasso;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private ImageView profilePic;
+    private Uri photoUrl;
+    private final static String TAG = "MAIN_MENU_ACTIVITY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +34,26 @@ public class MainMenuActivity extends AppCompatActivity
         setContentView(R.layout.activity_main_menu);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+        navView.setNavigationItemSelectedListener(this);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        profilePic = (ImageView)  navView.getHeaderView(0).findViewById(R.id.profile_pic);
+
+        if(user != null){
+            for(UserInfo profile : user.getProviderData()){
+                String providerID = profile.getProviderId();
+                String uid = profile.getUid();
+                String name = profile.getDisplayName();
+                String email = profile.getEmail();
+                photoUrl = profile.getPhotoUrl();
+            }
+        }
+
+        Log.d(TAG, "PHOTO_URL"+photoUrl);
+
+        Picasso.with(this.getApplicationContext()).load(photoUrl).into(profilePic);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
