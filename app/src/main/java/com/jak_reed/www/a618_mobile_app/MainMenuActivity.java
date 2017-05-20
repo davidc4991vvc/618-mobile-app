@@ -1,5 +1,6 @@
 package com.jak_reed.www.a618_mobile_app;
 
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -14,18 +15,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private ImageView profilePic;
+    private TextView profileName, profileEmail;
     private Uri photoUrl;
+    private String uid, name, email, providerID;
     private final static String TAG = "MAIN_MENU_ACTIVITY";
 
     @Override
@@ -40,20 +47,36 @@ public class MainMenuActivity extends AppCompatActivity
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         profilePic = (ImageView)  navView.getHeaderView(0).findViewById(R.id.profile_pic);
+        profileName = (TextView) navView.getHeaderView(0).findViewById(R.id.profile_name);
+        profileEmail = (TextView) navView.getHeaderView(0).findViewById(R.id.profile_email);
 
         if(user != null){
             for(UserInfo profile : user.getProviderData()){
-                String providerID = profile.getProviderId();
-                String uid = profile.getUid();
-                String name = profile.getDisplayName();
-                String email = profile.getEmail();
+                providerID = profile.getProviderId();
+                uid = profile.getUid();
+                name = profile.getDisplayName();
+                email = profile.getEmail();
                 photoUrl = profile.getPhotoUrl();
             }
         }
 
         Log.d(TAG, "PHOTO_URL"+photoUrl);
 
-        Picasso.with(this.getApplicationContext()).load(photoUrl).into(profilePic);
+        Transformation transformation = new RoundedTransformationBuilder()
+                .borderColor(Color.BLACK)
+                .borderWidthDp(1)
+                .cornerRadiusDp(30)
+                .oval(false)
+                .build();
+
+        Picasso.with(this.getApplicationContext())
+                .load(photoUrl)
+                .resize(200,200)
+                .transform(transformation)
+                .into(profilePic);
+
+        profileName.setText(name);
+        profileEmail.setText(email);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
