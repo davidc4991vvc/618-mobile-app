@@ -35,7 +35,6 @@ public class LoginWithEmail extends AppCompatActivity {
         backgroundVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                mp.setVolume(0, 0);
                 mp.setLooping(true);
             }
         });
