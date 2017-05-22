@@ -68,7 +68,7 @@
         app:layout_constraintRight_toRightOf="parent"/>
 
     <EditText
-        android:id="@+id/password_edit_text"
+        android:id="@+id/confirm_password_edit_text"
         android:layout_width="309dp"
         android:layout_height="47dp"
         android:ems="10"

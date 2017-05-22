@@ -25,7 +25,7 @@ public class LoginWithEmail extends AppCompatActivity {
         registerButton = (Button) findViewById(R.id.register_button);
         loginButton = (Button) findViewById(R.id.login_button);
         email = (EditText) findViewById(R.id.email_edit_text);
-        password = (EditText) findViewById(R.id.password_edit_text);
+        password = (EditText) findViewById(R.id.confirm_password_edit_text);
 
         Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.vapevidback);
 
