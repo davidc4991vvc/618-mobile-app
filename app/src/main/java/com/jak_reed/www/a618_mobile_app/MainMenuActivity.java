@@ -1,11 +1,13 @@
 package com.jak_reed.www.a618_mobile_app;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -127,9 +129,17 @@ public class MainMenuActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_account) {
-            
+
         } else if (id == R.id.nav_logout) {
-            signOut();
+            new AlertDialog.Builder(MainMenuActivity.this)
+                    .setTitle("Log Out")
+                    .setMessage("Are you sure you wish to log out?")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int whichButton){
+                            signOut();
+                        }
+                    }).show();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
