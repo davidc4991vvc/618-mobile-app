@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Weird Android bug that doesn't understand what visible/masked ids are. -->
     <item name="visible" type="id"/>
     <item name="masked" type="id"/>
 </resources>

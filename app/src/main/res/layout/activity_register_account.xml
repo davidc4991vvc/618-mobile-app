@@ -23,8 +23,8 @@
 
     <ImageView
         android:id="@+id/logoView"
-        android:layout_width="209dp"
-        android:layout_height="205dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -33,8 +33,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.026"
-        app:srcCompat="@drawable/logo" />
+        app:layout_constraintVertical_bias="0.082"
+        app:srcCompat="@drawable/defprofimg" />
 
     <View
         android:id="@+id/view"
@@ -50,10 +50,10 @@
         android:layout_width="212dp"
         android:layout_height="46dp"
         android:layout_marginTop="8dp"
-        android:text="Register"
+        android:text="Create Account"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_register_btn"/>
+        app:layout_constraintTop_toBottomOf="@+id/guideline_register_btn" />
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -84,7 +84,7 @@
     </android.support.design.widget.TextInputLayout>
 
     <EditText
-        android:id="@+id/editText11"
+        android:id="@+id/email_edit_text"
         android:layout_width="290dp"
         android:layout_height="52dp"
         android:ems="10"
@@ -118,18 +118,34 @@
     </android.support.design.widget.TextInputLayout>
 
     <EditText
-        android:id="@+id/editText12"
+        android:id="@+id/name_edit_text"
         android:layout_width="290dp"
         android:layout_height="52dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:ems="10"
         android:hint="Name"
         android:inputType="textPersonName"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/email_edit_text"
         app:layout_constraintHorizontal_bias="0.503"
-        android:layout_marginBottom="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/editText11" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/edit_profile_picture"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/edit"
+        app:layout_constraintBottom_toBottomOf="@+id/logoView"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="@+id/logoView"
+        app:layout_constraintRight_toRightOf="@+id/logoView"
+        app:layout_constraintTop_toTopOf="@+id/logoView"
+        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>
