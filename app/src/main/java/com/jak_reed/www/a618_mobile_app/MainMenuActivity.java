@@ -1,5 +1,6 @@
 package com.jak_reed.www.a618_mobile_app;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -125,9 +127,9 @@ public class MainMenuActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_account) {
-
+            
         } else if (id == R.id.nav_logout) {
-
+            signOut();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -137,5 +139,13 @@ public class MainMenuActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void signOut(){
+        FirebaseAuth.getInstance().signOut();
+        Toast.makeText(MainMenuActivity.this, "Logged Out", Toast.LENGTH_LONG).show();
+
+        // Start the login activity
+        startActivity(new Intent(MainMenuActivity.this, LoginView.class));
     }
 }
