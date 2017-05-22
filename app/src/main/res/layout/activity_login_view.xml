@@ -23,7 +23,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
-        android:id="@+id/logoView"
+        android:id="@+id/profile_picture"
         android:layout_width="266dp"
         android:layout_height="246dp"
         android:layout_marginBottom="8dp"

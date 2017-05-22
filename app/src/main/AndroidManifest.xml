@@ -3,6 +3,7 @@
     package="com.jak_reed.www.a618_mobile_app">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <activity
         android:name="com.facebook.FacebookActivity"
