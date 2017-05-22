@@ -52,17 +52,17 @@
         android:layout_marginBottom="0dp" />
 
     <Button
-        android:id="@+id/googleLogin"
+        android:id="@+id/google_login"
         style="@style/Base.TextAppearance.AppCompat.Widget.Button.Colored"
         android:layout_width="131dp"
         android:layout_height="59dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
         android:backgroundTint="@color/cardview_light_background"
-        app:layout_constraintBottom_toTopOf="@+id/guideline3"
         android:drawableLeft="@drawable/google"
         android:text="Log In"
-        android:layout_marginLeft="0dp"
-        app:layout_constraintLeft_toLeftOf="@+id/guideline2"
-        android:layout_marginBottom="0dp" />
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline2" />
 
     <View
         android:layout_width="261dp"

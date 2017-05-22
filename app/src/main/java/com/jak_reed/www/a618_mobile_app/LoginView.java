@@ -72,7 +72,7 @@ public class LoginView extends AppCompatActivity {
 
         loginWithEmail = (Button) findViewById(R.id.loginWitthEmail);
         loginWithFacebook = (Button) findViewById(R.id.btn_fb_login);
-        loginWithGoogle = (Button) findViewById(R.id.googleLogin);
+        loginWithGoogle = (Button) findViewById(R.id.google_login);
         backgroundVideo = (VideoView) findViewById(R.id.vapeVideoView);
 
         Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.vapevidback);
