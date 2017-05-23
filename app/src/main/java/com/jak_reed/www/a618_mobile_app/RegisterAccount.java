@@ -2,26 +2,33 @@ package com.jak_reed.www.a618_mobile_app;
 
 import android.*;
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.SyncStateContract;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import org.w3c.dom.Text;
+
+import java.io.File;
 
 public class RegisterAccount extends AppCompatActivity {
 
@@ -31,7 +38,7 @@ public class RegisterAccount extends AppCompatActivity {
     public TextInputLayout passwordLayout, confirmPasswordLayout;
     public EditText passwordEditText, confPasswordEditText;
     public ImageView profilePic;
-    private static final int READ_EXT_STO_CD = 123;
+    private static final String TAG = "REGISTER_ACT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,24 +56,35 @@ public class RegisterAccount extends AppCompatActivity {
         passwordEditText = passwordLayout.getEditText();
         confPasswordEditText = confirmPasswordLayout.getEditText();
 
-        pickPhotoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(pickPhoto, 1);
-            }
-        });
-
-        Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.vapevidback);
+        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.vapevidback);
 
         backgroundVideo.setVideoURI(uri);
         backgroundVideo.start();
 
+        /*
+        * LISTENERS TO BE CREATED/ADDED ON ACTIVITY START
+        * */
+
         backgroundVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                mp.setVolume(0, 0);
                 mp.setLooping(true);
+            }
+        });
+
+        pickPhotoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(RegisterAccount.this,
+                        android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(RegisterAccount.this,
+                            new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, 123);
+                } else if (ContextCompat.checkSelfPermission(RegisterAccount.this,
+                        android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED){
+                    startPhotoPickerActivity();
+                }
             }
         });
     }
@@ -77,35 +95,48 @@ public class RegisterAccount extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent){
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.d(TAG, "REQ_CD "+requestCode);
         super.onActivityResult(requestCode, resultCode, intent);
-        if (requestCode == 0){
-            if (resultCode == RESULT_OK){
-                Uri imageSelected = intent.getData();
-                profilePic.setImageURI(imageSelected);
-            }
-        } else if (requestCode == 1){
-            if (ContextCompat.checkSelfPermission(RegisterAccount.this,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(RegisterAccount.this,
-                        android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    if (resultCode == RESULT_OK){
-                        Uri imageSelected = intent.getData();
-                        profilePic.setImageURI(imageSelected);
-                    }
-                } else {
-
-                    // No explanation needed, we can request the permission.
-                    ActivityCompat.requestPermissions(RegisterAccount.this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXT_STO_CD);
-                    if (resultCode == RESULT_OK){
-                        Uri imageSelected = intent.getData();
-                        profilePic.setImageURI(imageSelected);
-                    }
+        switch(requestCode) {
+            case 0:
+                if(resultCode == RESULT_OK){
+                    Uri selectedImage = intent.getData();
+                    profilePic.setImageURI(selectedImage);
                 }
-            }
+
+                break;
+            case 1:
+                if(resultCode == RESULT_OK){
+                    Uri selectedImage = intent.getData();
+                    profilePic.setImageURI(selectedImage);
+                }
+                break;
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 123: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startPhotoPickerActivity();
+                } else {
+                    Toast.makeText(RegisterAccount.this,
+                            "Permission to select image has been denied.", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+            // Other permissions can be added.  Will be refactored later if need be.
+        }
+    }
+
+    private void startPhotoPickerActivity(){
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
+    }
 }
