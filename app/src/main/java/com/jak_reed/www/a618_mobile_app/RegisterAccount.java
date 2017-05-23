@@ -116,8 +116,7 @@ public class RegisterAccount extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 123: {
                 // If request is cancelled, the result arrays are empty.
