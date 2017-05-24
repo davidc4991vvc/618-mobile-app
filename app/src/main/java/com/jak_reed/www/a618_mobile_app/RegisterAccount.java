@@ -26,6 +26,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
+
 import org.w3c.dom.Text;
 
 import java.io.File;
@@ -101,17 +105,28 @@ public class RegisterAccount extends AppCompatActivity {
         switch(requestCode) {
             case 0:
                 if(resultCode == RESULT_OK){
-                    Uri selectedImage = intent.getData();
-                    profilePic.setImageURI(selectedImage);
+                    setImage(intent);
                 }
 
                 break;
             case 1:
                 if(resultCode == RESULT_OK){
-                    Uri selectedImage = intent.getData();
-                    profilePic.setImageURI(selectedImage);
+                    setImage(intent);
                 }
                 break;
+            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                CropImage.ActivityResult result = CropImage.getActivityResult(intent);
+                if(resultCode == RESULT_OK){
+                    Uri resultUri = result.getUri();
+                    Picasso.with(this.getApplicationContext())
+                        .load(resultUri)
+                        .resize(150,150)
+                        .into(profilePic);
+                        backgroundVideo.start();
+                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE){
+                    Log.d(TAG, "::ERROR_CROPPING_IMAGE::"+result.getError());
+                    Toast.makeText(RegisterAccount.this, "Error Cropping Image", Toast.LENGTH_LONG).show();
+                }
         }
     }
 
@@ -137,5 +152,13 @@ public class RegisterAccount extends AppCompatActivity {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
+    }
+
+    private void setImage(Intent intent){
+        Uri selectedImage = intent.getData();
+        CropImage.activity(selectedImage)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .start(this);
+
     }
 }
