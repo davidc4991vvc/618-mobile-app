@@ -157,8 +157,12 @@ public class LoginView extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             startActivity(new Intent(LoginView.this, MainMenuActivity.class));
                         } else {
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(LoginView.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException){
+                                Toast.makeText(LoginView.this, "User with this email already exist.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Log.w(TAG, "signInWithCredential:failure", task.getException());
+                                Toast.makeText(LoginView.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });
@@ -177,8 +181,12 @@ public class LoginView extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             startActivity(new Intent(LoginView.this, MainMenuActivity.class));
                         } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException){
+                                Toast.makeText(LoginView.this, "User with this email already exist.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Log.w(TAG, "signInWithCredential:failure", task.getException());
+                                Toast.makeText(LoginView.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });

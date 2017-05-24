@@ -31,6 +31,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -101,6 +102,7 @@ public class RegisterAccount extends AppCompatActivity {
                 }
             }
         });
+
         registerActButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,8 +122,12 @@ public class RegisterAccount extends AppCompatActivity {
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                        Toast.makeText(RegisterAccount.this, "Authentication failed.",
-                                                Toast.LENGTH_SHORT).show();
+//                                        Toast.makeText(RegisterAccount.this, "Authentication failed.",
+//                                                Toast.LENGTH_SHORT).show();
+                                        if(task.getException() instanceof FirebaseAuthUserCollisionException){
+                                            Toast.makeText(RegisterAccount.this,
+                                                    "User with this email already exist.", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 }
                             });
