@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.SyncStateContract;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
@@ -26,6 +27,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -43,11 +49,15 @@ public class RegisterAccount extends AppCompatActivity {
     public EditText passwordEditText, confPasswordEditText;
     public ImageView profilePic;
     private static final String TAG = "REGISTER_ACT";
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_account);
+
+        mAuth = FirebaseAuth.getInstance();
 
         backgroundVideo = (VideoView) findViewById(R.id.background_video);
         profilePic = (ImageView) findViewById(R.id.profile_picture);
@@ -91,6 +101,50 @@ public class RegisterAccount extends AppCompatActivity {
                 }
             }
         });
+        registerActButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = emailEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+                String confPass = confPasswordEditText.getText().toString();
+
+                if (!(email.equals("")) && !(password.equals("")) && (password.equals(confPass))){
+                    mAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(RegisterAccount.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Log.d(TAG, "createUserWithEmail:success");
+                                        FirebaseUser user = mAuth.getCurrentUser();
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                        Toast.makeText(RegisterAccount.this, "Authentication failed.",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                } else {
+                    Toast.makeText(RegisterAccount.this, "Make sure all fields match and the " +
+                            "confirmed password matches the entered password", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+            }
+        };
     }
 
     @Override
@@ -105,13 +159,13 @@ public class RegisterAccount extends AppCompatActivity {
         switch(requestCode) {
             case 0:
                 if(resultCode == RESULT_OK){
-                    setImage(intent);
+                    startImageCrop(intent);
                 }
 
                 break;
             case 1:
                 if(resultCode == RESULT_OK){
-                    setImage(intent);
+                    startImageCrop(intent);
                 }
                 break;
             case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
@@ -154,11 +208,24 @@ public class RegisterAccount extends AppCompatActivity {
         startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
     }
 
-    private void setImage(Intent intent){
+    private void startImageCrop(Intent intent){
         Uri selectedImage = intent.getData();
         CropImage.activity(selectedImage)
                 .setGuidelines(CropImageView.Guidelines.ON)
                 .start(this);
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 }
