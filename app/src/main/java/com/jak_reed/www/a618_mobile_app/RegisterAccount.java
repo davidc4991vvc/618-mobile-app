@@ -3,9 +3,11 @@ package com.jak_reed.www.a618_mobile_app;
 import android.*;
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -19,6 +21,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,18 +31,30 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import org.w3c.dom.Text;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.HashMap;
 
 public class RegisterAccount extends AppCompatActivity {
 
@@ -49,16 +64,23 @@ public class RegisterAccount extends AppCompatActivity {
     public TextInputLayout passwordLayout, confirmPasswordLayout;
     public EditText passwordEditText, confPasswordEditText;
     public ImageView profilePic;
+    private ProgressDialog progressDialog;
     private static final String TAG = "REGISTER_ACT";
+
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseStorage mStorage = FirebaseStorage.getInstance();
+    private StorageReference mProfilePicRef;
+    private DatabaseReference mRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_account);
 
-        mAuth = FirebaseAuth.getInstance();
+        // Configure the storage and database
+        mRef = FirebaseDatabase.getInstance().getReference().child("users");
+
 
         backgroundVideo = (VideoView) findViewById(R.id.background_video);
         profilePic = (ImageView) findViewById(R.id.profile_picture);
@@ -75,6 +97,8 @@ public class RegisterAccount extends AppCompatActivity {
 
         backgroundVideo.setVideoURI(uri);
         backgroundVideo.start();
+
+        profilePic.setDrawingCacheEnabled(true);
 
         /*
         * LISTENERS TO BE CREATED/ADDED ON ACTIVITY START
@@ -106,24 +130,26 @@ public class RegisterAccount extends AppCompatActivity {
         registerActButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = emailEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-                String confPass = confPasswordEditText.getText().toString();
+                progressDialog = ProgressDialog.show(RegisterAccount.this, "Creating Account", "Creating your account.", true);
 
-                if (!(email.equals("")) && !(password.equals("")) && (password.equals(confPass))){
+                final String name = nameEditText.getText().toString().trim();
+                final String email = emailEditText.getText().toString().trim();
+                final String password = passwordEditText.getText().toString().trim();
+                final String confPass = confPasswordEditText.getText().toString().trim();
+
+                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && (password.equals(confPass))){
                     mAuth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener(RegisterAccount.this, new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        // Sign in success, update UI with the signed-in user's information
                                         Log.d(TAG, "createUserWithEmail:success");
-                                        FirebaseUser user = mAuth.getCurrentUser();
+                                        writeUserToDBOnSuccess(name, email);
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
-//                                        Toast.makeText(RegisterAccount.this, "Authentication failed.",
-//                                                Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(RegisterAccount.this, "Account Could Not Be Created.",
+                                                Toast.LENGTH_SHORT).show();
                                         if(task.getException() instanceof FirebaseAuthUserCollisionException){
                                             Toast.makeText(RegisterAccount.this,
                                                     "User with this email already exist.", Toast.LENGTH_SHORT).show();
@@ -138,6 +164,7 @@ public class RegisterAccount extends AppCompatActivity {
             }
         });
 
+        mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -167,7 +194,6 @@ public class RegisterAccount extends AppCompatActivity {
                 if(resultCode == RESULT_OK){
                     startImageCrop(intent);
                 }
-
                 break;
             case 1:
                 if(resultCode == RESULT_OK){
@@ -187,6 +213,7 @@ public class RegisterAccount extends AppCompatActivity {
                     Log.d(TAG, "::ERROR_CROPPING_IMAGE::"+result.getError());
                     Toast.makeText(RegisterAccount.this, "Error Cropping Image", Toast.LENGTH_LONG).show();
                 }
+                break;
         }
     }
 
@@ -219,6 +246,53 @@ public class RegisterAccount extends AppCompatActivity {
         CropImage.activity(selectedImage)
                 .setGuidelines(CropImageView.Guidelines.ON)
                 .start(this);
+    }
+
+    private void writeUserToDBOnSuccess(final String name, final String email){
+        // Sign in success, update UI with the signed-in user's information
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        mProfilePicRef = mStorage.getReference("profile-pictures/"+user.getUid());
+        profilePic.buildDrawingCache();
+
+        Bitmap profImageBM = profilePic.getDrawingCache();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        profImageBM.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] profPicData = baos.toByteArray();
+
+        UploadTask uploadTask = mProfilePicRef.putBytes(profPicData);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
+
+                Log.d(TAG, "::UPLOAD_FAIL");
+                Toast.makeText(RegisterAccount.this, "Error Registering", Toast.LENGTH_LONG).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            @SuppressWarnings("VisibleForTests")
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                HashMap<String, String> userDataMap = new HashMap<String, String>();
+                FirebaseUser user = mAuth.getCurrentUser();
+                Uri profilePicUrl = taskSnapshot.getDownloadUrl();
+
+                Log.d(TAG, "::UPLOAD_SUCC");
+                Log.d(TAG, "DOWNLOAD_URL"+profilePicUrl.toString());
+
+                userDataMap.put("name", name);
+                userDataMap.put("email", email);
+                userDataMap.put("profilePictureUrl", profilePicUrl.toString());
+
+                mRef.child(user.getUid()).setValue(userDataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        progressDialog.dismiss();
+                        Toast.makeText(RegisterAccount.this, "Account Created!", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
     }
 
     @Override
