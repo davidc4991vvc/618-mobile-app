@@ -105,7 +105,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Password"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:backgroundTint="#ed221e"
+            android:textCursorDrawable="@drawable/text_cursor_drawable"/>
     </android.support.design.widget.TextInputLayout>
 
     <EditText
@@ -120,5 +122,7 @@
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toTopOf="@+id/login_password_edit_text"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="@+id/backgroundVideo" />
+        app:layout_constraintRight_toRightOf="@+id/backgroundVideo"
+        android:backgroundTint="#ed221e"
+        android:textCursorDrawable="@drawable/text_cursor_drawable"/>
 </android.support.constraint.ConstraintLayout>
