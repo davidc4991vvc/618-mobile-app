@@ -96,6 +96,7 @@ public class RegisterAccount extends AppCompatActivity {
         emailEditText = (EditText) findViewById(R.id.email_edit_text);
         passwordLayout = (TextInputLayout) findViewById(R.id.password_edit_text);
         confirmPasswordLayout = (TextInputLayout) findViewById(R.id.confirm_password_edit_text);
+
         passwordEditText = passwordLayout.getEditText();
         confPasswordEditText = confirmPasswordLayout.getEditText();
 
@@ -314,15 +315,13 @@ public class RegisterAccount extends AppCompatActivity {
 
     private boolean verifyEmail(String emailToVerify){
         if (TextUtils.isEmpty(emailToVerify)){
-            Toast.makeText(RegisterAccount.this,
-                    "Email field cannot be empty.", Toast.LENGTH_LONG).show();
+            emailEditText.setError("Email field cannot be empty.");
             return false;
         } else {
             if(Patterns.EMAIL_ADDRESS.matcher(emailToVerify).matches()){
                 return true;
             } else {
-                Toast.makeText(RegisterAccount.this,
-                        "Email must be the correct format", Toast.LENGTH_LONG).show();
+                emailEditText.setError("Email must be the correct format.");
                 return false;
             }
         }
@@ -336,16 +335,14 @@ public class RegisterAccount extends AppCompatActivity {
         pattern = Pattern.compile(NAME_PATTERN);
         matcher = pattern.matcher(nameToVerify);
 
-        if (TextUtils.isEmpty(nameToVerify)){ //
-            Toast.makeText(RegisterAccount.this, "Name field cannot be empty.",
-                    Toast.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(nameToVerify)){
+            nameEditText.setError("Name field cannot be empty.");
             return false;
         } else {
             if (matcher.matches()){
                 return true;
             } else {
-                Toast.makeText(RegisterAccount.this, "Name field can only consist of letters.",
-                        Toast.LENGTH_LONG).show();
+                nameEditText.setError("Name field can only consist of letters.");
                 return false;
             }
         }
@@ -361,17 +358,14 @@ public class RegisterAccount extends AppCompatActivity {
         matcher = pattern.matcher(password);
 
         if (!matcher.matches()){
-            Toast.makeText(RegisterAccount.this,
-                    "Password must contain at least one uppercase letter, One special " +
-                            "character ($@$!%*?&), one number, and be 8 characters long.",
-                    Toast.LENGTH_LONG).show();
+            passwordEditText.setError("Password must contain at least one uppercase letter, one special " +
+                    "character ($@$!%*?&), one number, and be 8 characters long.");
             return false;
         } else {
             if (password.equals(confirmPassword)){
                 return true;
             } else {
-                Toast.makeText(RegisterAccount.this,
-                        "Passwords do not match.", Toast.LENGTH_LONG).show();
+                confPasswordEditText.setError("Passwords do not match.");
                 return false;
             }
         }
