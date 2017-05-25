@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,6 +56,8 @@ import org.w3c.dom.Text;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RegisterAccount extends AppCompatActivity {
 
@@ -65,8 +68,11 @@ public class RegisterAccount extends AppCompatActivity {
     public EditText passwordEditText, confPasswordEditText;
     public ImageView profilePic;
     private ProgressDialog progressDialog;
-    private static final String TAG = "REGISTER_ACT";
 
+    private static final String TAG = "REGISTER_ACT";
+    private boolean hasImageChanged = false; // Has imaged changed for checking?
+
+    // Firebase variables and references needed
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseStorage mStorage = FirebaseStorage.getInstance();
@@ -137,29 +143,39 @@ public class RegisterAccount extends AppCompatActivity {
                 final String password = passwordEditText.getText().toString().trim();
                 final String confPass = confPasswordEditText.getText().toString().trim();
 
-                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && (password.equals(confPass))){
-                    mAuth.createUserWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(RegisterAccount.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        Log.d(TAG, "createUserWithEmail:success");
-                                        writeUserToDBOnSuccess(name, email);
-                                    } else {
-                                        // If sign in fails, display a message to the user.
-                                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                        Toast.makeText(RegisterAccount.this, "Account Could Not Be Created.",
-                                                Toast.LENGTH_SHORT).show();
-                                        if(task.getException() instanceof FirebaseAuthUserCollisionException){
-                                            Toast.makeText(RegisterAccount.this,
-                                                    "User with this email already exist.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                }
-                            });
+                if (verifyEmail(email)){
+                    if(verifyPassword(password, confPass)){
+                        if (verifyName(name)){
+                            if (hasImageChanged){
+                                mAuth.createUserWithEmailAndPassword(email, password)
+                                        .addOnCompleteListener(RegisterAccount.this, new OnCompleteListener<AuthResult>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "createUserWithEmail:success");
+                                                    writeUserToDBOnSuccess(name, email);
+                                                } else {
+                                                    // If sign in fails, display a message to the user.
+                                                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                                    if(task.getException() instanceof FirebaseAuthUserCollisionException){
+                                                        Toast.makeText(RegisterAccount.this,
+                                                                "User with this email already exist.", Toast.LENGTH_SHORT).show();
+                                                        progressDialog.dismiss();
+                                                    }
+                                                }
+                                            }
+                                        });
+                            } else {
+                                progressDialog.dismiss();
+                            }
+                        } else {
+                            progressDialog.dismiss();
+                        }
+                    } else {
+                        progressDialog.dismiss();
+                    }
                 } else {
-                    Toast.makeText(RegisterAccount.this, "Make sure all fields match and the " +
-                            "confirmed password matches the entered password", Toast.LENGTH_LONG).show();
+                    progressDialog.dismiss();
                 }
             }
         });
@@ -209,6 +225,7 @@ public class RegisterAccount extends AppCompatActivity {
                         .resize(150,150)
                         .into(profilePic);
                         backgroundVideo.start();
+                    hasImageChanged = true;
                 } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE){
                     Log.d(TAG, "::ERROR_CROPPING_IMAGE::"+result.getError());
                     Toast.makeText(RegisterAccount.this, "Error Cropping Image", Toast.LENGTH_LONG).show();
@@ -293,6 +310,71 @@ public class RegisterAccount extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private boolean verifyEmail(String emailToVerify){
+        if (TextUtils.isEmpty(emailToVerify)){
+            Toast.makeText(RegisterAccount.this,
+                    "Email field cannot be empty.", Toast.LENGTH_LONG).show();
+            return false;
+        } else {
+            if(Patterns.EMAIL_ADDRESS.matcher(emailToVerify).matches()){
+                return true;
+            } else {
+                Toast.makeText(RegisterAccount.this,
+                        "Email must be the correct format", Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
+    }
+
+    private boolean verifyName(String nameToVerify){
+        Pattern pattern;
+        Matcher matcher;
+
+        final String NAME_PATTERN = "^([A-Z][a-z]*)+[\\s]*+([A-Z][a-z]*)*$";
+        pattern = Pattern.compile(NAME_PATTERN);
+        matcher = pattern.matcher(nameToVerify);
+
+        if (TextUtils.isEmpty(nameToVerify)){ //
+            Toast.makeText(RegisterAccount.this, "Name field cannot be empty.",
+                    Toast.LENGTH_LONG).show();
+            return false;
+        } else {
+            if (matcher.matches()){
+                return true;
+            } else {
+                Toast.makeText(RegisterAccount.this, "Name field can only consist of letters.",
+                        Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
+    }
+
+    private boolean verifyPassword(String password, String confirmPassword){
+        Pattern pattern;
+        Matcher matcher;
+
+        final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)" +
+                "(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}";
+        pattern = Pattern.compile(PASSWORD_PATTERN);
+        matcher = pattern.matcher(password);
+
+        if (!matcher.matches()){
+            Toast.makeText(RegisterAccount.this,
+                    "Password must contain at least one uppercase letter, One special " +
+                            "character ($@$!%*?&), one number, and be 8 characters long.",
+                    Toast.LENGTH_LONG).show();
+            return false;
+        } else {
+            if (password.equals(confirmPassword)){
+                return true;
+            } else {
+                Toast.makeText(RegisterAccount.this,
+                        "Passwords do not match.", Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
     }
 
     @Override
