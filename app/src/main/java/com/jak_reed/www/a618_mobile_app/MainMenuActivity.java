@@ -53,6 +53,9 @@ public class MainMenuActivity extends AppCompatActivity
         profilePic = (ImageView)  navView.getHeaderView(0).findViewById(R.id.profile_pic);
         profileName = (TextView) navView.getHeaderView(0).findViewById(R.id.profile_name);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.logo);
+
         if(user != null){
             for(UserInfo profile : user.getProviderData()){
                 providerID = profile.getProviderId();
