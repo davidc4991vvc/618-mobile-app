@@ -12,7 +12,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -31,7 +33,7 @@ public class LoginWithEmail extends AppCompatActivity {
 
     public VideoView backgroundVideo;
     public Button registerButton, loginButton;
-    public EditText email, editTextPassword;
+    public EditText email, editTextPassword, input;
     public TextInputLayout password;
     public TextView forgotPass;
 
@@ -90,16 +92,7 @@ public class LoginWithEmail extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()){
-                                    progressDialog.dismiss();
-                                    Log.d(TAG, "LI_SUCCESS");
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    Toast.makeText(LoginWithEmail.this, "Logged In.", Toast.LENGTH_LONG).show();
-                                } else {
-                                    progressDialog.dismiss();
-                                    Log.d(TAG, "LI_FAIL");
-                                    email.setError("Incorrect email/password combination.");
-                                }
+                                handleEmailLogin(task);
                             }
                         });
             }
@@ -109,36 +102,21 @@ public class LoginWithEmail extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                final EditText input = new EditText(LoginWithEmail.this);
-                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 final AlertDialog.Builder builder = new AlertDialog.Builder(LoginWithEmail.this);
+
+                input = new EditText(LoginWithEmail.this);
+                input.setInputType(InputType.TYPE_CLASS_TEXT |
+                        InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
                 builder.setView(input);
 
                 builder.setMessage("Enter e-mail address to send the reset password link.")
-                        .setTitle("Forgot Password")
+                        .setTitle("Forgot Password?")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which){
-                                AlertDialog.Builder confirmBuilder =
-                                        new AlertDialog.Builder(LoginWithEmail.this);
-                                builder.setMessage("Send reset link to the email: "
-                                        +input.getText().toString()+"?")
-                                        .setTitle("Confirm Reset")
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which){
-                                                mAuth.sendPasswordResetEmail(input.getText().toString())
-                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<Void> task) {
-                                                                if (task.isSuccessful()){
-                                                                    Toast.makeText(LoginWithEmail.this, "Email sent!", Toast.LENGTH_LONG).show();
-                                                                }
-                                                            }
-                                                        });
-                                            }
-                                        });
-                                builder.show();
+                                final String email = input.getText().toString();
+                                sendResetEmail(email);
                             }
                         }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                             @Override
@@ -149,6 +127,48 @@ public class LoginWithEmail extends AppCompatActivity {
                 builder.show();
             }
         });
+    }
+
+    private void handleEmailLogin(Task<AuthResult> task){
+        if (task.isSuccessful()){
+            progressDialog.dismiss();
+            Log.d(TAG, "LI_SUCCESS");
+            FirebaseUser user = mAuth.getCurrentUser();
+            Toast.makeText(LoginWithEmail.this, "Logged In.", Toast.LENGTH_LONG).show();
+        } else {
+            progressDialog.dismiss();
+            Log.d(TAG, "LI_FAIL");
+            email.setError("Incorrect email/password combination.");
+        }
+    }
+
+    private void sendResetEmail(final String email){
+        if (verifyEmail(email)) {
+            mAuth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(LoginWithEmail.this,
+                                        "Email sent to " + email, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+        }
+    }
+
+    private boolean verifyEmail(String emailToVerify){
+        if (TextUtils.isEmpty(emailToVerify)){
+            input.setError("Email field cannot be empty.");
+            return false;
+        } else {
+            if(Patterns.EMAIL_ADDRESS.matcher(emailToVerify).matches()){
+                return true;
+            } else {
+                input.setError("Email must be the correct format.");
+                return false;
+            }
+        }
     }
 
     @Override
