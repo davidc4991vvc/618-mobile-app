@@ -34,7 +34,7 @@ public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private ImageView profilePic;
-    private TextView profileName, profileEmail;
+    private TextView profileName;
     private Uri photoUrl;
     private String uid, name, email, providerID;
     private final static String TAG = "MAIN_MENU_ACTIVITY";
@@ -52,7 +52,6 @@ public class MainMenuActivity extends AppCompatActivity
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         profilePic = (ImageView)  navView.getHeaderView(0).findViewById(R.id.profile_pic);
         profileName = (TextView) navView.getHeaderView(0).findViewById(R.id.profile_name);
-        profileEmail = (TextView) navView.getHeaderView(0).findViewById(R.id.profile_email);
 
         if(user != null){
             for(UserInfo profile : user.getProviderData()){
@@ -69,7 +68,7 @@ public class MainMenuActivity extends AppCompatActivity
         Transformation transformation = new RoundedTransformationBuilder()
                 .borderColor(Color.BLACK)
                 .borderWidthDp(1)
-                .cornerRadiusDp(30)
+                .cornerRadiusDp(50)
                 .oval(false)
                 .build();
 
@@ -79,7 +78,6 @@ public class MainMenuActivity extends AppCompatActivity
                 .transform(transformation)
                 .into(profilePic);
         profileName.setText(name);
-        profileEmail.setText(email);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
