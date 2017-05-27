@@ -1,18 +1,20 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorControlNormal">#f70707</item>
-        <item name="colorControlActivated">#f70707</item>
-        <item name="colorControlHighlight">#f70707</item>
     </style>
 
     <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="applayout" parent="Theme.AppCompat.NoActionBar" >
+
+        <item name="android:statusBarColor">?android:attr/colorControlActivated</item>
+        <item name="android:navigationBarColor">?attr/colorAccent</item>
+    </style>
 </resources>

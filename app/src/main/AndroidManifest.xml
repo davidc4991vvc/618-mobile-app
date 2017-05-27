@@ -29,7 +29,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:theme="@style/applayout">
         <activity android:name=".LoginView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,12 +42,15 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".LoginWithEmail" />
+        <activity android:name=".LoginWithEmail"
+            android:theme="@style/applayout"/>
         <activity
             android:name=".MainMenuActivity"
             android:label="@string/title_activity_main_menu"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
-        <activity android:name=".RegisterAccount"></activity>
+        <activity android:name=".RegisterAccount"
+            android:theme="@style/applayout">
+        </activity>
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" android:theme="@style/Base.Theme.AppCompat"/>
     </application>
 
