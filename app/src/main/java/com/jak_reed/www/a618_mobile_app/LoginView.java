@@ -1,6 +1,7 @@
 package com.jak_reed.www.a618_mobile_app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -64,6 +65,7 @@ public class LoginView extends AppCompatActivity {
     public VideoView backgroundVideo;
     public Button loginWithEmail, loginWithFacebook, loginWithGoogle;
     public CallbackManager cbManager;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +132,9 @@ public class LoginView extends AppCompatActivity {
         loginWithFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog = ProgressDialog.show(LoginView.this,
+                        "Logging In", "Logging into your account...", true);
+                progressDialog.show();
                 LoginManager.getInstance().logInWithReadPermissions(LoginView.this, Arrays.asList("email", "public_profile"));
             }
         });
@@ -137,6 +142,9 @@ public class LoginView extends AppCompatActivity {
         loginWithGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog = ProgressDialog.show(LoginView.this,
+                        "Logging In", "Logging into your account...", true);
+                progressDialog.show();
                 signIn();
             }
         });
@@ -146,6 +154,7 @@ public class LoginView extends AppCompatActivity {
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, GOOG_SIGN_IN_REQ_CD);
+        progressDialog.dismiss();
     }
 
     private void handleFacebookAccessToken(AccessToken token) throws FirebaseAuthUserCollisionException {
@@ -158,12 +167,15 @@ public class LoginView extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithCredential:success");
                             startActivity(new Intent(LoginView.this, MainMenuActivity.class));
+                            progressDialog.dismiss();
                         } else {
                             if (task.getException() instanceof FirebaseAuthUserCollisionException){
                                 Toast.makeText(LoginView.this, "User with this email already exist.", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
                             } else {
                                 Log.w(TAG, "signInWithCredential:failure", task.getException());
                                 Toast.makeText(LoginView.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
                             }
                         }
                     }
