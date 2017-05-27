@@ -70,7 +70,7 @@ public class RegisterAccount extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
     private static final String TAG = "REGISTER_ACT";
-    private boolean hasImageChanged = false; // Has imaged changed for checking?
+    private boolean imageFlag = false; // Has imaged changed for checking?
 
     // Firebase variables and references needed
     private FirebaseAuth mAuth;
@@ -144,37 +144,27 @@ public class RegisterAccount extends AppCompatActivity {
                 final String password = passwordEditText.getText().toString().trim();
                 final String confPass = confPasswordEditText.getText().toString().trim();
 
-                if (verifyEmail(email)){
-                    if(verifyPassword(password, confPass)){
-                        if (verifyName(name)){
-                            if (hasImageChanged){
-                                mAuth.createUserWithEmailAndPassword(email, password)
-                                        .addOnCompleteListener(RegisterAccount.this, new OnCompleteListener<AuthResult>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                                if (task.isSuccessful()) {
-                                                    Log.d(TAG, "createUserWithEmail:success");
-                                                    writeUserToDBOnSuccess(name, email);
-                                                } else {
-                                                    // If sign in fails, display a message to the user.
-                                                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                                    if(task.getException() instanceof FirebaseAuthUserCollisionException){
-                                                        Toast.makeText(RegisterAccount.this,
-                                                                "User with this email already exist.", Toast.LENGTH_SHORT).show();
-                                                        progressDialog.dismiss();
-                                                    }
-                                                }
-                                            }
-                                        });
-                            } else {
-                                progressDialog.dismiss();
-                            }
-                        } else {
-                            progressDialog.dismiss();
-                        }
-                    } else {
-                        progressDialog.dismiss();
-                    }
+
+                if (verifyEmail(email) && verifyPassword(password, confPass)
+                        && verifyName(name) && isImageAdded(imageFlag)) {
+                    mAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(RegisterAccount.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "createUserWithEmail:success");
+                                        writeUserToFirebase(name, email);
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                            Toast.makeText(RegisterAccount.this,
+                                                    "User with this email already exist.", Toast.LENGTH_SHORT).show();
+                                            progressDialog.dismiss();
+                                        }
+                                    }
+                                }
+                            });
                 } else {
                     progressDialog.dismiss();
                 }
@@ -226,7 +216,7 @@ public class RegisterAccount extends AppCompatActivity {
                         .resize(150,150)
                         .into(profilePic);
                         backgroundVideo.start();
-                    hasImageChanged = true;
+                    imageFlag = true;
                 } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE){
                     Log.d(TAG, "::ERROR_CROPPING_IMAGE::"+result.getError());
                     Toast.makeText(RegisterAccount.this, "Error Cropping Image", Toast.LENGTH_LONG).show();
@@ -266,7 +256,7 @@ public class RegisterAccount extends AppCompatActivity {
                 .start(this);
     }
 
-    private void writeUserToDBOnSuccess(final String name, final String email){
+    private void writeUserToFirebase(final String name, final String email){
         // Sign in success, update UI with the signed-in user's information
         FirebaseUser user = mAuth.getCurrentUser();
 
@@ -289,28 +279,43 @@ public class RegisterAccount extends AppCompatActivity {
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
-            @SuppressWarnings("VisibleForTests")
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                HashMap<String, String> userDataMap = new HashMap<String, String>();
-                FirebaseUser user = mAuth.getCurrentUser();
-                Uri profilePicUrl = taskSnapshot.getDownloadUrl();
-
-                Log.d(TAG, "::UPLOAD_SUCC");
-                Log.d(TAG, "DOWNLOAD_URL"+profilePicUrl.toString());
-
-                userDataMap.put("name", name);
-                userDataMap.put("email", email);
-                userDataMap.put("profilePictureUrl", profilePicUrl.toString());
-
-                mRef.child(user.getUid()).setValue(userDataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        progressDialog.dismiss();
-                        Toast.makeText(RegisterAccount.this, "Account Created!", Toast.LENGTH_LONG).show();
-                    }
-                });
+                writeUserDataToDatabase(taskSnapshot, name, email);
             }
         });
+    }
+
+    @SuppressWarnings("VisibleForTests")
+    private void writeUserDataToDatabase(UploadTask.TaskSnapshot taskSnapshot,
+                                         final String name, final String email){
+        HashMap<String, String> userDataMap = new HashMap<String, String>();
+        FirebaseUser user = mAuth.getCurrentUser();
+        Uri profilePicUrl = taskSnapshot.getDownloadUrl();
+
+        Log.d(TAG, "::UPLOAD_SUCC");
+        Log.d(TAG, "DOWNLOAD_URL"+profilePicUrl.toString());
+
+        userDataMap.put("name", name);
+        userDataMap.put("email", email);
+        userDataMap.put("profilePictureUrl", profilePicUrl.toString());
+
+        mRef.child(user.getUid()).setValue(userDataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                progressDialog.dismiss();
+                Toast.makeText(RegisterAccount.this, "Account Created!", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private boolean isImageAdded(boolean flag){
+        if (flag){
+            return true;
+        } else {
+            Toast.makeText(RegisterAccount.this,
+                    "A profile picture must be selected first.", Toast.LENGTH_LONG).show();
+            return false;
+        }
     }
 
     private boolean verifyEmail(String emailToVerify){
