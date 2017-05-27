@@ -140,7 +140,11 @@ public class MainMenuActivity extends AppCompatActivity
                         public void onClick(DialogInterface dialog, int whichButton){
                             signOut();
                         }
-                    }).show();
+                    }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int whichButton){
+                            // Do nothing
+                        }
+            }).show();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
