@@ -26,6 +26,12 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
@@ -39,6 +45,8 @@ public class MainMenuActivity extends AppCompatActivity
     private String uid, name, email, providerID;
     private final static String TAG = "MAIN_MENU_ACTIVITY";
 
+    private DatabaseReference mRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +58,9 @@ public class MainMenuActivity extends AppCompatActivity
         navView.setNavigationItemSelectedListener(this);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        uid = user.getUid();
+        mRef = FirebaseDatabase.getInstance().getReference().child("users").child(uid);
+
         profilePic = (ImageView)  navView.getHeaderView(0).findViewById(R.id.profile_pic);
         profileName = (TextView) navView.getHeaderView(0).findViewById(R.id.profile_name);
 
@@ -58,29 +69,34 @@ public class MainMenuActivity extends AppCompatActivity
 
         if(user != null){
             for(UserInfo profile : user.getProviderData()){
-                providerID = profile.getProviderId();
-                uid = profile.getUid();
-                name = profile.getDisplayName();
-                email = profile.getEmail();
-                photoUrl = profile.getPhotoUrl();
+                //Log.d(TAG, "AUTH_PROVIDER::"+profile.getProviderId());
+                if(profile.getProviderId().equals("password")){
+                    mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.d(TAG, "USING_EMAIL::");
+                            name = dataSnapshot.child("name").getValue().toString();
+                            photoUrl = Uri.parse(dataSnapshot.child("profilePictureUrl").getValue().toString());
+
+                            setUserDisplayInfo(name, photoUrl);
+                            Log.d(TAG, "DATA::"+" NAME::"+name+"profilePictureUrl::"+photoUrl);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.d(TAG, "FAILED_TO_CREATE_CONNECTION");
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "USING_OTHER::");
+                    name = profile.getDisplayName();
+                    photoUrl = profile.getPhotoUrl();
+
+                    Log.d(TAG, "DATA::"+" NAME::"+name+"profilePictureUrl::"+photoUrl);
+                    setUserDisplayInfo(name, photoUrl);
+                }
             }
         }
-
-        Log.d(TAG, "PHOTO_URL"+photoUrl);
-
-        Transformation transformation = new RoundedTransformationBuilder()
-                .borderColor(Color.BLACK)
-                .borderWidthDp(1)
-                .cornerRadiusDp(50)
-                .oval(false)
-                .build();
-
-        Picasso.with(this.getApplicationContext())
-                .load(photoUrl)
-                .resize(200,200)
-                .transform(transformation)
-                .into(profilePic);
-        profileName.setText(name);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -90,6 +106,23 @@ public class MainMenuActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void setUserDisplayInfo(final String disName, final Uri disPhoto){
+        Transformation transformation = new RoundedTransformationBuilder()
+                .borderColor(Color.BLACK)
+                .borderWidthDp(1)
+                .cornerRadiusDp(50)
+                .oval(false)
+                .build();
+
+        Picasso.with(this.getApplicationContext())
+                .load(disPhoto)
+                .resize(200,200)
+                .transform(transformation)
+                .into(profilePic);
+
+        profileName.setText(disName);
     }
 
     @Override
