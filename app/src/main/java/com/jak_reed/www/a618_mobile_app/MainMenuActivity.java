@@ -38,7 +38,7 @@ import com.squareup.picasso.Transformation;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+ //
     private ImageView profilePic;
     private TextView profileName;
     private Uri photoUrl;
