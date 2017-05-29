@@ -134,6 +134,7 @@ public class LoginWithEmail extends AppCompatActivity {
             Log.d(TAG, "LI_SUCCESS");
             FirebaseUser user = mAuth.getCurrentUser();
             Toast.makeText(LoginWithEmail.this, "Logged In.", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(LoginWithEmail.this, MainMenuActivity.class));
         } else {
             progressDialog.dismiss();
             Log.d(TAG, "LI_FAIL");
