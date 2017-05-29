@@ -1,4 +1,5 @@
 # 618 Vape Mobile
+[![Build Status](https://travis-ci.org/jake32321/618-mobile-app.svg?branch=master)](https://travis-ci.org/jake32321/618-mobile-app)
  ### Welcome to  the 618 Vape Mobile app GitHub Repository!
  
 ![alt text](/app/src/main/res/drawable/logo.png)
