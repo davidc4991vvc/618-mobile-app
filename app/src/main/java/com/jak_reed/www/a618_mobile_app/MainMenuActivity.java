@@ -178,9 +178,7 @@ public class MainMenuActivity extends AppCompatActivity
                             // Do nothing
                         }
             }).show();
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_locations) {
 
         }
 
