@@ -165,24 +165,28 @@ public class MainMenuActivity extends AppCompatActivity
         Class fragClass;
         int id = item.getItemId();
 
-        if (id == R.id.nav_account) {
-
-        } else if (id == R.id.nav_logout) {
-            new AlertDialog.Builder(MainMenuActivity.this)
-                    .setTitle("Log Out")
-                    .setMessage("Are you sure you wish to log out?")
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
-                        public void onClick(DialogInterface dialog, int whichButton){
-                            signOut();
-                        }
-                    }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener(){
-                        public void onClick(DialogInterface dialog, int whichButton){
-                            // Do nothing
-                        }
-            }).show();
-        } else if (id == R.id.nav_locations) {
-
+        switch (id){
+            case R.id.nav_account:
+                fragClass = AccountFragment.class;
+                break;
+            case R.id.nav_logout:
+                new AlertDialog.Builder(MainMenuActivity.this)
+                        .setTitle("Log Out")
+                        .setMessage("Are you sure you wish to log out?")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int whichButton){
+                                signOut();
+                            }
+                        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int whichButton){
+                        // Do nothing
+                    }
+                }).show();
+                break;
+            case R.id.nav_locations:
+                fragClass = LocationFragment.class;
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
