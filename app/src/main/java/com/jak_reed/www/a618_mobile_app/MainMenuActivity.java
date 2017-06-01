@@ -1,11 +1,13 @@
 package com.jak_reed.www.a618_mobile_app;
 
-import android.app.FragmentManager;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
@@ -47,6 +49,13 @@ public class MainMenuActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
+        StartFragment startFragment = new StartFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_fragment_container, startFragment)
+                .commit();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -157,7 +166,6 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        FragmentManager fragmentManager = getFragmentManager();
 
         switch (id){
             case R.id.nav_account:
@@ -179,11 +187,14 @@ public class MainMenuActivity extends AppCompatActivity
                 }).show();
                 break;
             case R.id.nav_locations:
-
+                LocationsFragment locationsFragment = new LocationsFragment();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_fragment_container, locationsFragment)
+                        .commit();
                 break;
             default:
         }
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
