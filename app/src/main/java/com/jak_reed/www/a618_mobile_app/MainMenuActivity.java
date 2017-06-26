@@ -169,7 +169,11 @@ public class MainMenuActivity extends AppCompatActivity
 
         switch (id){
             case R.id.nav_account:
-
+                StoreSelectFragment storeSelectFragment = new StoreSelectFragment();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_fragment_container, storeSelectFragment)
+                        .commit();
                 break;
             case R.id.nav_logout:
                 new AlertDialog.Builder(MainMenuActivity.this)
