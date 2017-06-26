@@ -58,7 +58,6 @@ public class LocationsFragment extends Fragment implements OnMapReadyCallback{
         double lon = -89.2481136;
         LatLng startLoc = new LatLng(lat, lon);
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startLoc, 9));
-
     }
 
 }
